@@ -853,10 +853,11 @@ wget https://raw.githubusercontent.com/IreneKnapp/direct-sqlite/a74cc50c735053c7
 - [ascii rain](https://github.com/nkleemann/ascii-rain)
 - [ascii 盆景](https://gitlab.com/jallbrit/cbonsai)
 
-# Awesome 系列
+# 项目列表(awesome系列等)
 
 - all awesome: [awesome-awesomeness](https://github.com/bayandin/awesome-awesomeness)
   - [awesome-solfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted)
+- [build-your-own-x](https://github.com/codecrafters-io/build-your-own-x)
 
 # 参考
 

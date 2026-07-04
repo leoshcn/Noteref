@@ -381,6 +381,12 @@
 - `git cherry-pick commit1..commit2` 应用提交(commit1,commit2]
   > 两个点
 - `git format-patch ref` 当前到指定位置的修改打为patch
+
+  ```
+  git format-patch -3 -o /path/to/ # 每个提交生成一个patch文件
+  git format-patch -3 --stdout > all.patch # 三个提交生成一个patch文件，但也会保留commit粒度
+  git am all.patch
+  ```
 - `git apply --check patch_path` 检查是否合法
 - `git apply patch_path` 打补丁
 - `git am --signoff < patch_path` 打补丁，补丁中需要带着提交人的信息。可通过`git format-patch`添加
@@ -455,7 +461,7 @@
 
 ## 1.20. 配置文件
 
-### 1.20.1. gitignore
+### 1.20.1. .gitignore
 
 - 说明
 
@@ -524,11 +530,28 @@
   relative/path/to/dir/anotherfile
   ```
 
-### 1.20.2. .gitattributes
+### 1.20.2. .git/info/exclude
 
-**Git 只会在检入与检出时对文件进行处理，具体点说就是 git add 与 git checkout 操作中。因此 Git 并不会自动将工作目录中正在编写的文本文件自动转换换行符。**
+本地忽略规则文件，语法与.gitignore相同
 
-#### 1.20.2.1. 使用说明
+典型使用场景:
+
+1. 个人调试文件：本地测试用的临时文件，不想提交也不想污染 .gitignore
+2. IDE/编辑器配置：个人特有的编辑器配置
+3. 本地环境差异：每个人开发环境不同导致的文件差异
+
+Git 忽略规则的优先级从高到低（会合并生效）：
+
+1. .gitignore（仓库根目录及子目录）
+2. .git/info/exclude（本地个人规则）
+3. ~/.gitconfig 中的 core.excludesFile（全局规则）
+
+### 1.20.3. .gitattributes
+
+**Git 只会在检入与检出时对文件进行处理，具体点说就是 git add 与 git checkout 操作中。**
+**因此 Git 并不会自动将工作目录中正在编写的文本文件自动转换换行符。**
+
+#### 1.20.3.1. 使用说明
 
 - .gitattributes示例
 
@@ -563,7 +586,7 @@
   git reset --hard HEAD
   ```
 
-#### 1.20.2.2. 原理说明
+#### 1.20.3.2. 原理说明
 
 > 本地测试结论：
 

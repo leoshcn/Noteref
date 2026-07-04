@@ -805,6 +805,12 @@ cmp -l file1.bin file2.bin | gawk '{printf "%08X %02X %02X\n", $1-1, strtonum(0$
   echo "1 2 3 4" | xargs -d ' ' -t -P 5 -I {} bash -c "my_echo {}"
   ```
 
+- 通过 xargs 打印出所有文件名称以及内容：
+
+  ```bash
+  fd . -t f | xargs -I {} bash -c 'echo "{}" && cat {} && printf "_%.0s" {1..100} && echo '''
+  ```
+
 - 综合应用
 
   ```bash
@@ -2511,22 +2517,51 @@ pam_faillock(sudo:auth): Consecutive login failures for user user1 account tempo
 
 ### 8.6.1. chmod
 
-修改文件权限。
+- chmod 2775: 四位数字的含义：2 7 7 5
+  - 第1位（2）：特殊权限位
+  - 第2位（7）：owner 权限
+  - 第3位（7）：group 权限
+  - 第4位（5）：others 权限
 
-```bash
-chmod 755 file                # 数字方式（rwxr-xr-x）
-chmod u+x file                # 给所有者添加执行权限
-chmod g-w file                # 移除组写权限
-chmod o=r file                # 设置其他人只读
-chmod a+x file                # 所有人添加执行权限
-chmod -R 755 dir/             # 递归修改目录权限
-chmod u+s file                # 设置SUID
-chmod g+s dir/                # 设置SGID
-chmod o+t dir/                # 设置SBIT
-```
+- 特殊权限位
+  - setgid:
+    - 目录的效果：
+      - 在该目录下创建的新文件/子目录会自动继承父目录的组，而不是创建者的主组。
+      - 常用于共享目录，确保团队成员创建的文件属于同一个组。
+    - 对可执行文件的效果：
+      - 以该文件所属组的权限去执行
+  - setuid:
+    - 对可执行文件生效：执行该文件时，进程以文件所有者的身份运行，而非执行者本身的身份。
+    - 典型例子：
+      - /usr/bin/passwd 的权限是 -rwsr-xr-x，owner 是 root。
+      - 普通用户执行 passwd 时，进程以 root 身份运行，从而能修改 /etc/shadow。
+  - sticky bit
+    - 对目录生效：目录内的文件只能由文件所有者、目录所有者或 root 删除/重命名，即使其他用户对该目录有写权限。
+    - 典型例子：/tmp 的权限是 drwxrwxrwt（末尾的 t）。所有用户都能在 /tmp 创建文件，但不能删除别人的文件。
 
-- `u` 所有者, `g` 组, `o` 其他人, `a` 全部
-- 数字：r=4, w=2, x=1
+  |            |     | 作用对象        | 说明                                     |
+  | :--------- | :-- | :-------------- | :--------------------------------------- |
+  | setuid     | 4   | 可执行文件      | 以文件 owner 身份执行                    |
+  | setgid     | 2   | 可执行文件/目录 | 以文件 group 身份执行 / 新文件继承目录组 |
+  | sticky bit | 1   | 目录            | 只有 owner 能删自己的文件                |
+
+- 其他修改文件权限的方式
+
+  ```bash
+  chmod 755 file                # 数字方式（rwxr-xr-x）
+  chmod u+x file                # 给所有者添加执行权限
+  chmod g-w file                # 移除组写权限
+  chmod o=r file                # 设置其他人只读
+  chmod a+x file                # 所有人添加执行权限
+  chmod -R 755 dir/             # 递归修改目录权限
+  chmod u+s file                # 设置SUID
+  chmod g+s dir/                # 设置SGID
+  chmod o+t dir/                # 设置SBIT
+  chmod 2775                    # 设置权限，并且设置 setgid
+  ```
+
+  - `u` 所有者, `g` 组, `o` 其他人, `a` 全部
+  - 数字：r=4, w=2, x=1
 
 ### 8.6.2. chown
 

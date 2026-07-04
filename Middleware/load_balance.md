@@ -96,7 +96,7 @@
           lb_algo rr
           lb_kind DR  # 选择模型
           nat_mask 255.255.255.0
-          persistence_timeout 0 # 保持会话时间。如果两个同一个地址的请求间隔在指定时间（单位：s）内，那么就第二次会负载到上一次的服务器上 
+          persistence_timeout 0 # 保持会话时间。如果两个同一个地址的请求间隔在指定时间（单位：s）内，那么就第二次会负载到上一次的服务器上
           protocol TCP
 
           real_server 192.168.187.102 80 {
@@ -160,7 +160,7 @@
     - 尝试强制关闭主lvs的keepalived进程
       > keepalived本身并不高可用
 
-  
+
 - 如果后端服务器不能访问，那么keepalived会自动剔除
   - 启动后
   - 经过心跳间隔后，就会加入RS中
@@ -194,7 +194,7 @@
     - worker会热加载配置文件
       - 旧worker继续处理
       - master开启新的worker子进程
-      - 旧worker子进程关闭  
+      - 旧worker子进程关闭
 
 - nginx配置文件原理`安装目录/conf/nginx.conf`：
   - 重新加载配置文件：`service nginx reload`
@@ -215,7 +215,7 @@
         location ^~ URI {}:
           匹配上之后会阻断正则，不会和之后使用正则表达式的location进行匹配(该匹配不使用正则)
         优先级：= > ^~ > ~|~* >  /|/dir/
-      
+
       location配置规则
       location 的执行逻辑跟 location 的编辑顺序无关。
       矫正：这句话不全对，“普通 location ”的匹配规则是“最大前缀”，因此“普通 location ”的确与 location 编辑顺序无关；
@@ -295,7 +295,7 @@
       sendfile        on;
       #tcp_nopush     on; # 打开后，buffer未填满会一直堵塞
 
-      keepalive_timeout  0; 
+      keepalive_timeout  0;
       # keepalive_timeout  65;
       # 对应http协议1.1版本中那个请求头，持续多长时间不传输数据时才断开tcp连接
       # 此处为了查看RS切换过程，暂且先写成0，
@@ -334,7 +334,7 @@
               autoindex on; # 不会展示页面，会显示页面目录，就是镜像源网站那些
               # 可以通过此选项做镜像站
           }
-          location /aabb { 
+          location /aabb {
             proxy_pass https://192.168.187.102:80/;# 实现反向代理，请求其他服务器
           }
           location /thebaidu{
@@ -425,13 +425,13 @@
     - conf/context.xml中插入：
       ```xml
       <!-- 指定memcached主机ip和端口 -->
-      <Manager className="de.javakaffee.web.msm.MemcachedBackupSessionManager" 
-        memcachedNodes="n1:192.168.187.101:11211" 
-          sticky="false" 
+      <Manager className="de.javakaffee.web.msm.MemcachedBackupSessionManager"
+        memcachedNodes="n1:192.168.187.101:11211"
+          sticky="false"
           lockingMode="auto"
           sessionBackupAsync="false"
         requestUriIgnorePattern=".*\.(ico|png|gif|jpg|css|js)$"
-          sessionBackupTimeout="1000" transcoderFactoryClass="de.javakaffee.web.msm.serializer.kryo.KryoTranscoderFactory" 
+          sessionBackupTimeout="1000" transcoderFactoryClass="de.javakaffee.web.msm.serializer.kryo.KryoTranscoderFactory"
       />
       ```
   - 时间问题：
@@ -447,7 +447,7 @@
 
 > **【四层和七层】**
 
-- 四层和七层的区别；   
+- 四层和七层的区别；
   - 四层负载均衡，指的是IP+端口的负载均衡；
   - 七层负载均衡，指的是基于WEB请求，URL等应用层信息的负载均衡。
   - 当然，同理，还有基于MAC地址的二层负载均衡和基于IP地址的三层负载均衡。
@@ -460,7 +460,7 @@
 - LVS是在四层，可以对几乎所有的应用作负载均衡。
 - 但是LVS对于故障后端感知并不敏感，比如在DR模式下，要是有一个后端服务器没有配置VIP，就会导致请求的一部分数据会直接丢失。
 - 且LVS对于网络环境的稳定性要求较高，如果请求失败了，只能依赖于前端的应用自身的重试机制，负载均衡不对请求进行重新下发。
-- 而且LVS也很受限于网络架构，在设计之初就要考虑到网络架构是否满足LVS负载的前置条件。 
+- 而且LVS也很受限于网络架构，在设计之初就要考虑到网络架构是否满足LVS负载的前置条件。
 
 > **【关于nginx】**
 
@@ -491,7 +491,7 @@ lvs和nginx都是现在很主流的负载均衡方式，他们各有优缺点，
 
 在使用上，一般最前端所采取的的策略应是lvs，也就是dns的指向应为lvs均衡器，主要原因在于nginx虽然功能强大，但是当作为后端的服务器规模庞大时，nginx的网络带宽就成了一个巨大的瓶颈。
 
-但是当lvs作为负载均衡的话，一旦后端接受到请求的服务器出了问题，那么这次请求就失败了。        
+但是当lvs作为负载均衡的话，一旦后端接受到请求的服务器出了问题，那么这次请求就失败了。
 
 所以在很多情况下，nginx会作为lvs的节点进行负载均衡，这样，既可以避免nginx的性能造成很严重的带宽瓶颈，也可以利用nginx的错误重传避免lvs一锤子买卖，还能利用nginx的各种高级功能，包括https卸载，报文头修改等。
 
